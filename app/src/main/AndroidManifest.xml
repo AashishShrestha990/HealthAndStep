@@ -13,6 +13,9 @@
         android:theme="@style/Theme.HealthNStep"
         tools:targetApi="31">
         <activity
+            android:name=".PersonalDetails"
+            android:exported="false" />
+        <activity
             android:name=".SplashScreen"
             android:exported="false" />
         <activity
