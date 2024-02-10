@@ -1,12 +1,15 @@
 package coventry.aashish.healthnstep;
 
+import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +17,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -65,7 +70,98 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        Steps = findViewById(R.id.stepsid);
+        Distance = findViewById(R.id.distanceid);
+        Calorie = findViewById(R.id.calorieid);
+        Target = findViewById(R.id.timeid);
+        Time = findViewById(R.id.minuteid);
+        WaterBtn=findViewById(R.id.button);
+        Waterlevel=findViewById(R.id.waterlevelid);
+        //    stepCounttargetView=findViewById(R.id.stepcount);
+        stepprogressBar = findViewById(R.id.progresBar);
+        waterprogress = findViewById(R.id.waterid);
+        dailyProgress = findViewById(R.id.step7);
+        D1=findViewById(R.id.d1);
+        D2=findViewById(R.id.d2);
+        D3=findViewById(R.id.d3);
+        D4=findViewById(R.id.d4);
+        D5=findViewById(R.id.d5);
+        D6=findViewById(R.id.d6);
+        D7=findViewById(R.id.d7);
+        Settarget=findViewById(R.id.settargetid);
 
+        Edittar = getIntent().getStringExtra("edittarge");
+        if (Edittar == null) {
+
+            Edittar = "7000";
+        }
+        stepCountTarget = Integer.parseInt(Edittar);
+        Dates = findViewById(R.id.dateid);
+        resetsteps();
+        loadData();
+        startTime  = System.currentTimeMillis();
+
+        Settarget.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setTargetFunction();
+            }
+        });
+
+        dailyProgress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "Stepcount is "+ stepCount, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        Calendar calendar=Calendar.getInstance();
+        String currentDate= DateFormat.getDateInstance().format(calendar.getTime());
+        String dateonly = getdateonly();
+        int previous  = Integer.parseInt(dateonly)-1;
+        int previous1  = Integer.parseInt(dateonly)-2;
+        Dates.setText(currentDate);
+
+        s1=findViewById(R.id.step1);
+        s2=findViewById(R.id.step2);
+        s3=findViewById(R.id.step3);
+        s4=findViewById(R.id.step4);
+        s5=findViewById(R.id.step5);
+        s6=findViewById(R.id.step6);
+        s7=findViewById(R.id.step7);
+        sensorManager= (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        int previous2  = Integer.parseInt(dateonly)-3;
+        int previous3  = Integer.parseInt(dateonly)-4;
+
+        stepprogressBar.setMax(stepCountTarget);
+        s7.setMax(9000);
+        waterprogress.setMax(2000);
+        Target.setText("/" + stepCountTarget);
+
+        if (stepCountSensor == null){
+            Target.setText("no sensor");
+        }
+        WaterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                waterprogress.incrementProgressBy(200);
+                waterlevel = waterlevel+ 200;
+                Waterlevel.setText(waterlevel+"/2000ml");
+
+            }
+
+        });
+        int previous4  = Integer.parseInt(dateonly)-5;
+        int previous5  = Integer.parseInt(dateonly)-6;
+
+        D7.setText("2/"+dateonly);
+        D6.setText("2/"+previous);
+        D5.setText("2/"+previous1);
+        D4.setText("2/"+previous2);
+        D3.setText("2/"+previous3);
+        D2.setText("2/"+previous4);
+        D1.setText("2/"+previous5);
 
     }
     public void onSensorChanged(SensorEvent sensorEvent) {
