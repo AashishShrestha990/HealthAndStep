@@ -1,8 +1,11 @@
 package coventry.aashish.healthnstep;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.View;
@@ -18,10 +21,12 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
     private TextView Target, Waterlevel,Distance,Steps;
     private TextView Dates,Calorie,Time,WaterBtn;
 
@@ -164,6 +169,21 @@ public class MainActivity extends AppCompatActivity {
         D1.setText("2/"+previous5);
 
     }
+    public void setTargetFunction() {
+//        Dialog dialog = new Dialog();
+//        dialog.show();
+        Intent intent = new Intent(MainActivity.this, PersonalDetails.class);
+        String target = Target.getText().toString();
+        String Target1= String.valueOf(stepCountTarget);
+        intent.putExtra("gettarge", Target1);
+        startActivity(intent);
+    }
+
+    private String getdateonly(){
+        return new SimpleDateFormat("dd",Locale.getDefault()).format(new Date());
+    };
+
+    @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if(sensorEvent.sensor.getType() == Sensor.TYPE_STEP_COUNTER){
             stepCount = (int) sensorEvent.values[0];
@@ -181,6 +201,53 @@ public class MainActivity extends AppCompatActivity {
 
             float calorie = currentSteps * stepLengthinmeter * calorieperstep;
             Calorie.setText(String.format(Locale.getDefault(),"%.0f Cal", calorie));
+        }
+    }
+
+    private void resetsteps(){
+        Steps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "longpress to reset", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        Steps.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                previousStep= stepCount;
+                Steps.setText("0");
+                stepprogressBar.setProgress(0);
+                saveData();
+                return true;
+            }
+        });
+    }
+
+    private void saveData() {
+        SharedPreferences sharedpre = getSharedPreferences("mypref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpre.edit();
+        editor.putString("Key1",String.valueOf(previousStep));
+        editor.apply();
+    }
+
+    public void applyTexts(int target) {
+        Target.setText(target);
+    }
+
+    private void loadData(){
+        SharedPreferences sharedpre = getSharedPreferences("mypref", Context.MODE_PRIVATE);
+        int savedNumber  = (int) sharedpre.getFloat("key1", 0f);
+        previousStep = savedNumber;
+    }
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+    }
+    public void onPauseButtonclicked(View view) {
+        if (isPause) {
+            isPause = false;
+//        PauseBtn.setText("Resume");
+
         }
     }
 
