@@ -8,6 +8,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -50,6 +51,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private int stepCountTarget = 8000;
 
     private TextView stepCounttargetView;
+    private Handler timerHandler = new Handler();
+
+    private Runnable timerRunnable = new Runnable() {
+        @Override
+        public void run() {
+            long milis = System.currentTimeMillis() - startTime;
+            int seconds=(int)(milis/1000);
+            int min=seconds/60;
+            Time.setText(String.format(Locale.getDefault(),"%2d min",min));
+        }
+    };
 
     protected  void onStop() {
         super.onStop();
